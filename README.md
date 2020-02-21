@@ -309,5 +309,5 @@ Setelah directory sudah kosong kami membackup file location.log dan wget.log den
 
 Kemudian untuk crontab yang digunakan adalah
 ``` 
-    5 6-23/8 * * 1-5,7 /home/seijaku/SoalShiftSISOP20_modul1_F5/soal03/soal03_scriptno3.sh
+    5 6-23/8 * * 0-5 /home/seijaku/SoalShiftSISOP20_modul1_F5/soal03/soal03_scriptno3.sh
 ``` 
