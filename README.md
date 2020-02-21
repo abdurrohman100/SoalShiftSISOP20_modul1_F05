@@ -1,7 +1,8 @@
+
 # SoalShiftSISOP20_modul1_F5
 Repository Praktikum Sisop 1
 
-## Penjelasan Penyelesaian Soal
+## Penjelasan Penyelesaian Soal nomor 1
 ### Soal 1a
 
 ``` 
@@ -111,3 +112,89 @@ Terakhir pada soal 1c kita diminta untuk menunjukan 10 nama produk dengan profit
 yang hanya berasal dari Illionis dan Texas. Lalu kita melakukan sort -gk2 yang berarti kita sorting data sesuai generic 
 numerik sort dan yang menjadi patokan sort merupakan kolom 2. Hasil sort kita simpan dalam file sorted.tsv. Baru dari file
 yang sudah tersorting kita tampilkan 10 produk. 
+
+## Penjelasan Penyelesaian Soal nomor 2
+
+### Soal 2a
+Pada soal nomor 2a kita diminta membuat sebuah script unutk mengenerate password berupa alphanumeric sebanyak 28 character. Untuk menggenerate random kamu membuat nya dalam file randomme.sh dan untuk menggenerate script menggunakan perintah berikut
+``` 
+#!/bin/bash
+
+cat /dev/urandom | tr -dc 'a-zA-Z0-9' | head -c 27 >> $fileOut
+cat /dev/urandom | tr -dc '0-9' | head -c 1 >> $fileOut
+     
+```
+Disini kami menggunakan /dev/urandom bawaan linux untuk menggenerate character acak. Kemudian dengan fungsi `tr -dc 'a-zA-Z0-9'` dimana tr merupakan fungsi untuk mendelete atau mentranslate character dengan menggunakan parameter `-dc` yang berarti delete complemen dari set yang diberikan yaitu `'a-zA-Z0-9'` kemudian mengambil 27 karakter awal menggunakan `head -c 27`, kemudian untuk menjamin adanya numeric pada password kami melakukan perintah yang sama untuk mendapatkan character terakhir dengan mengubah set nya menjadi `'0-9'`.
+.
+
+### Soal 2b
+Pada nomor 2b kita diminta menyimpan password hasil script nomor 2a kedalam sebuah text file dengan nama berupa argumen yang diberikan saat menjalankan script. Karena 2a dan 2b berhubungan kami menjadikan 2a dan 2b menjadi satu script
+``` 
+
+#!/bin/bash
+
+fileOut="$1.txt"
+cat /dev/urandom | tr -dc 'a-zA-Z0-9' | head -c 27 >> $fileOut
+cat /dev/urandom | tr -dc '0-9' | head -c 1 >> $fileOut
+     
+```
+Untuk menerima argumen yang akan menjadi nama file kita menggunakan `$1` dan memasukanya ke variable `fileOut` dan menambahkan ekstensi .txt . Kemudian dari script nomor satu kita tinggal melakukan redirection ke file bernama `$fileOut` dengan menggunakan  `>` dan `>>`.  
+ 
+ ### Soal 2b
+Pada nomor 2b kita diminta menyimpan password hasil script nomor 2a kedalam sebuah text file dengan nama berupa argumen yang diberikan saat menjalankan script. Karena 2a dan 2b berhubungan kami menjadikan 2a dan 2b menjadi satu script
+``` 
+
+#!/bin/bash
+
+fileOut="$1.txt"
+cat /dev/urandom | tr -dc 'a-zA-Z0-9' | head -c 27 >> $fileOut
+cat /dev/urandom | tr -dc '0-9' | head -c 1 >> $fileOut
+     
+```
+Untuk menerima argumen yang akan menjadi nama file kita menggunakan `$1` dan memasukanya ke variable `fileOut` dan menambahkan ekstensi .txt . Kemudian dari script nomor satu kita tinggal melakukan redirection ke file bernama `$fileOut` dengan menggunakan  `>` dan `>>`.  Untuk penggunaan scriptnya sendiri contohnya seperti berikut
+
+    seijaku@seijaku:~/Documents/Sisop/Praktikum1/Nomor2$ bash randomme.sh inicontohnamaFile
+
+
+maka akan script akan membuat file dengan nama inicontohnamaFile.txt.
+
+### Soal 2c
+Pada nomor 2c kita diminta melakukan enkripsi  terhadap nama file yang sudah kita buat menggunakan caesasr chipper dengan shiftnya adalah  jam pembuatan file. Karena disini diasumsikan file dibuat tidak untuk diubah maka disini untuk jam pembuatan file kami menggunakan modified date.
+``` 
+
+#!/bin/bash
+nama=$1
+phrase=${nama%%.*}
+shift=$(ls -l $nama | cut -d ' ' -f '8' | head -c 2)
+upperAlphabet=ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ
+lowAlphabet=abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz
+newphrase=$(echo $phrase | tr "${upperAlphabet:0:26}" "${upperAlphabet:${shift}:26}" | tr "${lowAlphabet:0:26}" "${lowAlphabet:${shift}:26}")
+mv $nama $newphrase.txt
+     
+```
+Untuk menerima argumen yang akan menjadi nama file kita menggunakan `$1` dan memasukanya ke variable `nama` dan menghapus ekstensi .txt menggunakan string manipulation dan memasukan hasilnya ke variable `phrase`. Untuk mendapatkan shift yang kita inginkan kita menggunakan `ls -l $nama | cut -d ' ' -f '8' | head -c 2` . `ls -l $nama` akan didapat hasil seperti berikut
+
+`-rw-r--r-- 1 seijaku seijaku 28 Feb 21 13:59 inicontohnamaFile.txt`
+kemudian kita gunakan `cut -d ' ' -f '8'` dengan parameter `-d ' '` kita menentukan delimiter berupa ' '(spasi) kemudain untuk mencetak kolom ke 8 kita menambahkan parameter `-f '8'` hasil yang didapat berupa HH:MM kemudian kita mengambil 2 cahracter awal dari hasilnya untuk mendapatkan jam pembuatan file yang kemudian disimpan ke variable `shift`.
+Untuk mempermudah melakukan enkripsi kita menggunakan bantuan fungsi tr dan string manipulation. Pertama kita mendefinisikan 2 buah set string yang masing-masing berisi 2 set huruf kapital dan biasa.
+
+    tr "${upperAlphabet:0:26}" "${upperAlphabet:${shift}:26}"
+Kemudian dari set tersebut kita melakukan string manipulation dengan mengesktrak substring dari stirng yang ada menggunakan `${string:position:length}` . Lakukan tr untuk string capital maupun biasa. Hasil enkripsi nama file kemudian disimpan dalam variable `nemphrase`. Kemudian kita merename file dengan menggunakan perintah mv `mv $nama $newphrase.txt`.
+Untuk penggunana script contohnya seperti berikut 
+    seijaku@seijaku:~/Documents/Sisop/Praktikum1/Nomor2$ bash encryption.sh inicontohnamaFile.txt 
+maka file inicontohnamaFile.txt akan berubah namanya dalam contoh ini shiftnya bernilai 13 jadi namanya berubah menjadi vavpbagbuanznSvyr.txt
+
+
+### Soal 2d
+Pada nomor 2d kita diminta mendekripsi file yang telah kita enkripsi. Cara kerjanya sama seperti script nomor 2c kita juga membutuhkan  jam pembuatan file untuk melakukan dekripsi. Scriptnya seperti berikut
+
+    #!/bin/bash
+    upperAlphabet=ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ
+    lowAlphabet=abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz
+    nama=$1
+    phrase=${nama%%.*}
+    shift=$(ls -l $nama | cut -d ' ' -f '8' | head -c 2)
+    newphrase=$(echo $phrase | tr "${upperAlphabet:${shift}:26}" "${upperAlphabet:0:26}" | tr "${lowAlphabet:${shift}:26}" "${lowAlphabet:0:26}")
+    mv $nama $newphrase.txt
+Pada script dekripsi kit hanya perlu menukar posisi set pada fungsi tr.
+
