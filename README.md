@@ -1,6 +1,10 @@
 
 # SoalShiftSISOP20_modul1_F5
 Repository Praktikum Sisop 1
+5111840000100-ABDUR ROHMAN
+5111840000166-FERALDY NATHANAEL
+
+
 
 ## Penjelasan Penyelesaian Soal nomor 1
 ### Soal 1a
@@ -221,43 +225,50 @@ Pertama kita mencek apakah terdapat location.log ataupun wget.log, jika ada maka
 	    do
 	    wget -O /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/pdkt_kusuma_$num.jpg --append-output=/home/seijaku/Documents/Sisop/Praktikum1/Nomor3/wget.log https://loremflickr.com/320/240/cat
     done
-   kemudian lakukan donwload memalui wget 28 kali.
-
-    grep "Location" /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/wget.log> /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/location.log
- Setelah Semua terdownload lakukan grep terhadap "Location" unutk mendapatkan alamat awal gambar.
+   Kemudian lakukan donwload memalui wget 28 kali.
    
 
-     if [ ! -d /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/duplicate ]
+ - wget berfungsi untuk mendownload file parameter -O untuk memungkinkan kita mendefinisikan nama file yang didownload
+ - --apend-output digunakan untuk mendapatkan messege log dari wget dan meng-append nya kedalam file log yang ditentukan
+ 
+
+        grep "Location" /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/wget.log> /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/location.log
+  Setelah Semua terdownload lakukan grep terhadap "Location" unutk mendapatkan alamat awal gambar.
+
+ - grep " Location" untuk mengambil semua lines yang mengandung kata "Location" pada wget.log dan me-redirect hasilnya ke location.log
+
+ 
+
+```     
+ 
+    if [ ! -d /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/duplicate ]
+        	    then
+        	    mkdir /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/duplicate
+        	    fi
+   if [ ! -d /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/kenangan ]
     	    then
-    	    mkdir /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/duplicate
-        fi
-    
-	    if [ ! -d /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/kenangan ]
-    then
-	    mkdir /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/kenangan
-    fi
+        	    mkdir /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/kenangan
+        	    fi
+
+``` 
   Kemudian kita cek apakah folder kenangan ataupun duplikat sudah ada, jika belum maka buat folder yang belum ada.
   
+``` 
     if [ "$(ls -A /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/kenangan/)" ];
+	then
+	kLast=$(ls /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/kenangan -l | cat | grep "kenangan" |awk -F ' |_' '{print $10}' | rev | cut -c5-|rev |sort -n | tail -1)
+    else
+	kLast=1
+    fi
+    
+    if [ "$(ls -A /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/duplicate/)" ]; 
 	    then
-	    kLast=$(ls /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/kenangan -l | cat | grep "kenangan" |awk -F ' |_' '{print $10}' | rev | cut -c5-|rev |sort -n | tail -1)
+	    dLast=$(ls /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/duplicate -l | cat | grep "duplicate" |awk -F ' |_' '{print $10}' | rev | cut -c5-|rev |sort -n | tail -1)
     else
-	    kLast=1
+	dLast=1
     fi
-    
-    if [ "$(ls -A /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/duplicate/)" ]; then
-    
-    dLast=$(ls /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/duplicate -l | cat | grep "duplicate" |awk -F ' |_' '{print $10}' | rev | cut -c5-|rev |sort -n | tail -1)
-    
-    else
-    
-    dLast=1
-    
-    echo "Dlast"$dLast
-    
-    fi
-    
-    echo $dLast $kLast "Helo"
+  
+``` 
   Kemudian kita mengecek nomor terakhir dalam folder kenangan maupun duplikat
   
     awk -F ' ' '{n++;print n" "$2;}' /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/location.log | sort -k 2 > /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/sorted.log
@@ -269,7 +280,7 @@ Pertama kita mencek apakah terdapat location.log ataupun wget.log, jika ada maka
     
     cmdKena="mv /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/pdkt_kusuma_"$1".jpg /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/kenangan/kenangan_"a".jpg";
     
-    if(i==$2){ system(cmdDupe);print "Move"$1;b++} else {system(cmdKena);print "Send"$1;a++}; i=$2;}' a="$kLast" b="$dLast" /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/sorted.log
+    if(i==$2){ system(cmdDupe);b++} else {system(cmdKena);a++}; i=$2;}' a="$kLast" b="$dLast" /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/sorted.log
     
  Kemudian untuk mengecek file dupikat atau tidak kami mengecek melalui sorted.lo yang ada
  
@@ -287,4 +298,8 @@ Setelah directory sudah kosong kami membackup file location.log dan wget.log den
     fi
   Terakhir kami meremove sorted.log yang sudah dipakai.
 
-.
+Kemudian untuk crontab yang digunakan adalah
+
+    5 6-23/8 * * 1-5,7 /home/seijaku/SoalShiftSISOP20_modul1_F5/soal03/soal03_scriptno3.sh
+
+
