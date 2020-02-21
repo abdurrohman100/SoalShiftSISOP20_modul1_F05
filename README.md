@@ -185,7 +185,7 @@ kemudian kita gunakan `cut -d ' ' -f '8'` dengan parameter `-d ' '` kita menentu
 Untuk mempermudah melakukan enkripsi kita menggunakan bantuan fungsi tr dan string manipulation. Pertama kita mendefinisikan 2 buah set string yang masing-masing berisi 2 set huruf kapital dan biasa.
 
     tr "${upperAlphabet:0:26}" "${upperAlphabet:${shift}:26}"
-Kemudian dari set tersebut kita melakukan string manipulation dengan mengesktrak substring dari stirng yang ada menggunakan `${string:position:length}` . Lakukan tr untuk string capital maupun biasa. Hasil enkripsi nama file kemudian disimpan dalam variable `nemphrase`. Kemudian kita merename file dengan menggunakan perintah mv `mv $nama $newphrase.txt`.
+Kemudian dari set tersebut kita melakukan string manipulation dengan mengesktrak substring dari stirng yang ada menggunakan `${string:position:length}` . Lakukan tr untuk string capital maupun biasa. Hasil enkripsi nama file kemudian disimpan dalam variable `newphrase`. Kemudian kita merename file dengan menggunakan perintah mv `mv $nama $newphrase.txt`.
 Untuk penggunana script contohnya seperti berikut 
     seijaku@seijaku:~/Documents/Sisop/Praktikum1/Nomor2$ bash encryption.sh inicontohnamaFile.txt 
 maka file inicontohnamaFile.txt akan berubah namanya dalam contoh ini shiftnya bernilai 13 jadi namanya berubah menjadi vavpbagbuanznSvyr.txt
