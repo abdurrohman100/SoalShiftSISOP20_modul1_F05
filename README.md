@@ -196,5 +196,95 @@ Pada nomor 2d kita diminta mendekripsi file yang telah kita enkripsi. Cara kerja
     shift=$(ls -l $nama | cut -d ' ' -f '8' | head -c 2)
     newphrase=$(echo $phrase | tr "${upperAlphabet:${shift}:26}" "${upperAlphabet:0:26}" | tr "${lowAlphabet:${shift}:26}" "${lowAlphabet:0:26}")
     mv $nama $newphrase.txt
-Pada script dekripsi kit hanya perlu menukar posisi set pada fungsi tr.
+Pada script dekripsi kita hanya perlu menukar posisi set pada fungsi tr.
 
+
+## Penjelasan Penyelesaian Soal nomor 3
+### Soal 3
+Pada soal nomor 3 kita diminta membaut script untuk mendownload 28 gambar dari "https://loremflickr.com/320/240/cat" menggunakan command wget dan menyimpan file dengan nama "pdkt_kusuma_NO" (contoh: pdkt_kusuma_1, pdkt_kusuma_2, pdkt_kusuma_3) dan menyimpan log messages wget kedalam sebuah file "wget.log".  Script tersebut hanya berjalan setiap 8 jam dimulai dari jam 6.05 setiap hari kecuali hari Sabtu. Kemudian diminta membuat sebuah script untuk mengidentifikasi gambar yang identik dari keseluruhan gambar yang terdownload tadi. Bila terindikasi sebagai gambar yang identik, maka sisakan 1 gambar dan pindahkan sisa file identik tersebut ke dalam folder ./duplicate dengan format filename "duplicate_nomor" (contoh : duplicate_200, duplicate_201). Setelah itu lakukan pemindahan semua gambar yang tersisa kedalam folder ./kenangan dengan format filename "kenangan_nomor" (contoh: kenangan_252, kenangan_253). Setelah tidak ada gambar di current directory, maka lakukan backup seluruh log menjadi ekstensi ".log.bak".
+Penyelsainya menggunkaan script sebagai berikut
+
+    #! /bin/bash
+  
+    if [ -f /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/wget.log ]
+	    then
+	    rm /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/wget.log
+    fi
+    
+    if [ -f /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/location.log ]
+	    then
+	    rm /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/location.log
+    fi
+Pertama kita mencek apakah terdapat location.log ataupun wget.log, jika ada maka kita remove mereka terlebih dahulu.
+    
+    for ((num=1; num<=28; num=num+1))
+	    do
+	    wget -O /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/pdkt_kusuma_$num.jpg --append-output=/home/seijaku/Documents/Sisop/Praktikum1/Nomor3/wget.log https://loremflickr.com/320/240/cat
+    done
+   kemudian lakukan donwload memalui wget 28 kali.
+
+    grep "Location" /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/wget.log> /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/location.log
+ Setelah Semua terdownload lakukan grep terhadap "Location" unutk mendapatkan alamat awal gambar.
+   
+
+     if [ ! -d /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/duplicate ]
+    	    then
+    	    mkdir /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/duplicate
+        fi
+    
+	    if [ ! -d /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/kenangan ]
+    then
+	    mkdir /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/kenangan
+    fi
+  Kemudian kita cek apakah folder kenangan ataupun duplikat sudah ada, jika belum maka buat folder yang belum ada.
+  
+    if [ "$(ls -A /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/kenangan/)" ];
+	    then
+	    kLast=$(ls /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/kenangan -l | cat | grep "kenangan" |awk -F ' |_' '{print $10}' | rev | cut -c5-|rev |sort -n | tail -1)
+    else
+	    kLast=1
+    fi
+    
+    if [ "$(ls -A /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/duplicate/)" ]; then
+    
+    dLast=$(ls /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/duplicate -l | cat | grep "duplicate" |awk -F ' |_' '{print $10}' | rev | cut -c5-|rev |sort -n | tail -1)
+    
+    else
+    
+    dLast=1
+    
+    echo "Dlast"$dLast
+    
+    fi
+    
+    echo $dLast $kLast "Helo"
+  Kemudian kita mengecek nomor terakhir dalam folder kenangan maupun duplikat
+  
+    awk -F ' ' '{n++;print n" "$2;}' /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/location.log | sort -k 2 > /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/sorted.log
+ Untuk mendeteksi sebuah file duplikat atau tidak disini kami membuat filebantuan berupa file sorted.log yang berisi urutan nomor file dan lokasinya
+ 
+    awk -F ' ' '{
+    
+    cmdDupe="mv /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/pdkt_kusuma_"$1".jpg /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/duplicate/duplicate_"b".jpg";
+    
+    cmdKena="mv /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/pdkt_kusuma_"$1".jpg /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/kenangan/kenangan_"a".jpg";
+    
+    if(i==$2){ system(cmdDupe);print "Move"$1;b++} else {system(cmdKena);print "Send"$1;a++}; i=$2;}' a="$kLast" b="$dLast" /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/sorted.log
+    
+ Kemudian untuk mengecek file dupikat atau tidak kami mengecek melalui sorted.lo yang ada
+ 
+    cat /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/location.log >> /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/location.log.bak
+    
+    cat /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/wget.log >> /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/wget.log.bak\
+Setelah directory sudah kosong kami membackup file location.log dan wget.log dengan mengapend ke location.log.bak dan wget.log.bak
+    
+    if [ -f sorted.log ]
+    
+    then
+    
+    rm /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/sorted.log
+    
+    fi
+  Terakhir kami meremove sorted.log yang sudah dipakai.
+
+.
