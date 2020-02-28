@@ -1,5 +1,6 @@
 
 
+
 # SoalShiftSISOP20_modul1_F5
 Repository Praktikum Sisop 1
 
@@ -15,7 +16,7 @@ Repository Praktikum Sisop 1
 ``` 
 #!/bin/bash
 
-awk -F "	" 
+awk -F "\t" 
 
 '{if($13 ~ "West"){totalProfitWest=totalProfitWest + $21};
       if($13 ~ "East"){totalProfitEast=totalProfitEast + $21};
@@ -46,7 +47,7 @@ memiliki profit terkecil. Setelah didapat baru di print/ditunjukan nama region d
 ``` 
 #!/bin/bash
 
-awk -F "	" 'BEGIN {z=1;}
+awk -F "\t" 'BEGIN {z=1;}
 
 		   {if($13 ~ "Central"){a[$11]=a[$11]+$21;}}
 		   END {
@@ -102,23 +103,22 @@ mencari state mana yang memiliki total profit terkecil. Pada perulangan tersebut
 
 ``` 
 
-awk -F "	" 'BEGIN {}
+#!/bin/bash
 
-		   {if($11 ~ "Illionis" || $11 ~ "Texas"){
-			print $17 ";" $21 > "Barang-di-Texas-dan-Illionis.tsv"
-		   }}
 
-		   END { }' Sample-Superstore.tsv
+awk -F "\t" 'BEGIN {}
+		   {
+			if($11 ~ "Illinois" || $11 ~ "Texas"){b[$17]=b[$17]+$21;}
+			}
+		   END {
+			 for (i in b){print i ";" b[i]}
+			}' Sample-Superstore.tsv > Barang-di-Texas-dan-Illionis.tsv
 
-sort -t';' -gk2 Barang-di-Texas-dan-Illionis.tsv > sorted.tsv 
- awk -F  ";" '{print $1 $2}NR==10{exit}' sorted.tsv 
+sort -t';' -gk2 Barang-di-Texas-dan-Illionis.tsv | head -n 10 
+rm Barang-di-Texas-dan-Illionis.tsv 
      
 ```
-Terakhir pada soal 1c kita diminta untuk menunjukan 10 nama produk dengan profit terkecil dari data yang dihasilkan dari soal
-1b. Pada soal ini kita menggunakan cara yang berbeda. Pertama-tama kita membuat file baru yang berisi profit dan nama produk
-yang hanya berasal dari Illionis dan Texas. Lalu kita melakukan sort -gk2 yang berarti kita sorting data sesuai generic 
-numerik sort dan yang menjadi patokan sort merupakan kolom 2. Hasil sort kita simpan dalam file sorted.tsv. Baru dari file
-yang sudah tersorting kita tampilkan 10 produk. 
+Terakhir pada soal 1c kita diminta untuk menunjukan 10 nama produk dengan profit terkecil dari data yang dihasilkan dari soal 1b. Pertama kita menjumlahkan setiap profit setiap produk yang ada di Illionois atau Texas. Jumlahnya tersebut akan disimpan kedalam asosiatif array. Kemudian kita mencetak index dan value dari asosiatif array ke dalam Barang-di-Texas-dan-Illionis.tsv. Lalu kita melakukan sort -gk2 yang berarti kita sorting data sesuai generic numerik sort dan yang menjadi patokan sort merupakan kolom 2. Kemudian untuk menampilkan 10 produk kami menggunakan fungsi head -n 10 untuk menampilakan 10 line terbawah.
 
 ## Penjelasan Penyelesaian Soal nomor 2
 
@@ -126,13 +126,21 @@ yang sudah tersorting kita tampilkan 10 produk.
 Pada soal nomor 2a kita diminta membuat sebuah script unutk mengenerate password berupa alphanumeric sebanyak 28 character. Untuk menggenerate random kamu membuat nya dalam file randomme.sh dan untuk menggenerate script menggunakan perintah berikut
 ``` 
 #!/bin/bash
-
-cat /dev/urandom | tr -dc 'a-zA-Z0-9' | head -c 27 >> $fileOut
-cat /dev/urandom | tr -dc '0-9' | head -c 1 >> $fileOut
-     
+if [[ $1 =~ [^A-Za-z] ]]; 
+	then 
+	echo "Error Only Alphabet Allowed"
+else 
+	noNum=$(echo $1|tr -dc 'A-Za-z')
+	fileOut="$noNum.txt"
+	cat /dev/urandom | tr -dc 'A-Za-z0-9' | head -c 25 >> $fileOut
+	cat /dev/urandom | tr -dc 'A-Z' | head -c 1 >> $fileOut
+	cat /dev/urandom | tr -dc 'a-z' | head -c 1 >> $fileOut
+	cat /dev/urandom | tr -dc '0-9' | head -c 1 >> $fileOut
+fi
 ```
-Disini kami menggunakan /dev/urandom bawaan linux untuk menggenerate character acak. Kemudian dengan fungsi `tr -dc 'a-zA-Z0-9'` dimana tr merupakan fungsi untuk mendelete atau mentranslate character dengan menggunakan parameter `-dc` yang berarti delete complemen dari set yang diberikan yaitu `'a-zA-Z0-9'` kemudian mengambil 27 karakter awal menggunakan `head -c 27`, kemudian untuk menjamin adanya numeric pada password kami melakukan perintah yang sama untuk mendapatkan character terakhir dengan mengubah set nya menjadi `'0-9'`.
-.
+Pertama karena argumen yang di izinkan hanya alphabet maka kami melakukan pengecekan terlebih dahulu menggunakan regex. Jika argumen mengandung selain alphabet maka script tidak akan berjalan dan mangeluarkan error.
+Untuk menggenerate random password kami menggunakan /dev/urandom bawaan linux untuk menggenerate character acak. Kemudian dengan fungsi `tr -dc 'a-zA-Z0-9'` dimana tr merupakan fungsi untuk mendelete atau mentranslate character dengan menggunakan parameter `-dc` yang berarti delete complement dari set yang diberikan. Kami melakukan proses ini 4 kali untuk menjamin bahwa terdapat alphabet kapital,alphabet kecil dan angka.
+Kemudian mengambil karakter awal menggunakan `head -c` sesuai dengan jumah karakter yang akan di ambil. Setiap kali menggunakan head hasilnya akan di append ke file txt yang dibuat.
 
 ### Soal 2b
 Pada nomor 2b kita diminta menyimpan password hasil script nomor 2a kedalam sebuah text file dengan nama berupa argumen yang diberikan saat menjalankan script. Karena 2a dan 2b berhubungan kami menjadikan 2a dan 2b menjadi satu script
@@ -248,6 +256,7 @@ if [ -f $curdir/location.log ]
 fi
 ``` 
 >rm - remove files or directories
+
 >-f untuk menegecek sebuah file 
 
 Kemudian disini kami mengecek apakah ada file wget.log ataupun location.log. Jika ada maka file tersebut akan dihapus. Hal ini dilakukan agar script kedua bisa dijalankan berkali-kali. Jadi sebelum mendownload file. Untuk pengecekan file digunakan parameter -f dan pathfile yang ingin di cek. Kemudian jika terdapat file log maka file tersebut akan dihapus menggunakan rm.
@@ -261,7 +270,7 @@ do
 done
 ``` 
 > Wget - The non-interactive network downloader.
-> 
+
 > --append-output=logfile -  Append ke logfile. Same as -o
 
 Kemudian kami melakukan donwload file dari https://loremflickr.com/320/240/cat dengan menggunakan wget. Namun terlebih dahulu untuk menyimpan namafile dan alamat download pada sebuah variable dengan nama *nPDKT* dan *nDownload* . Perintah wget dimasukkan kedalam looping sehingga bisa mendownload 28 file saat dijalankan.
@@ -278,11 +287,16 @@ Kemudian untuk crontab yang digunakan adalah
     5 6-23/8 * * 0-5 /home/seijaku/SoalShiftSISOP20_modul1_F5/soal03/soal03_scriptno3.sh
 ``` 
 >5 6-23/8 * * 0-5
-> 5 berarti pada menit ke lima
-> 6-23/8 berarti mulai jam 6 hingga jam 23 setiap 8 jam
-> (bintang) * berarti setiap hari di bulan itu
-> (bintang) * berarti setiap bulan
-> 0-5 berarti dari hari MInggu sampai Jumat
+
+>> 5 berarti pada menit ke lima
+
+>> 6-23/8 berarti mulai jam 6 hingga jam 23 setiap 8 jam
+
+>> (bintang) * berarti setiap hari di bulan itu
+
+>> (bintang) * berarti setiap bulan
+
+>> 0-5 berarti dari hari MInggu sampai Jumat
 
 
 /home/seijaku/SoalShiftSISOP20_modul1_F5/soal03 disini adalah local directory pada user dimana terdapat file yang akan dieksekusi bisa disesuaikan untuk setiap user.
@@ -366,6 +380,7 @@ fi
 ``` 
 >ls - list directory contents
 >> -A do not list implied. Return false if a directory empty
+>
 >> -l    use a long listing format.
 
 >cat - concatenate files and print on the standard output
@@ -422,6 +437,3 @@ then
 fi
 ``` 
 Kemudian terakhir kami meremove sorted.log
-
-
-
