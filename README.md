@@ -278,11 +278,11 @@ Kemudian untuk crontab yang digunakan adalah
     5 6-23/8 * * 0-5 /home/seijaku/SoalShiftSISOP20_modul1_F5/soal03/soal03_scriptno3.sh
 ``` 
 >5 6-23/8 * * 0-5
->>5 berarti pada menit ke lima
->>6-23/8 berarti mulai jam 6 hingga jam 23 setiap 8 jam
->> (bintang) * berarti setiap hari di bulan itu
->>  (bintang) * berarti setiap bulan
->> 0-5 berarti dari hari MInggu sampai Jumat
+> 5 berarti pada menit ke lima
+> 6-23/8 berarti mulai jam 6 hingga jam 23 setiap 8 jam
+> (bintang) * berarti setiap hari di bulan itu
+> (bintang) * berarti setiap bulan
+> 0-5 berarti dari hari MInggu sampai Jumat
 
 
 /home/seijaku/SoalShiftSISOP20_modul1_F5/soal03 disini adalah local directory pada user dimana terdapat file yang akan dieksekusi bisa disesuaikan untuk setiap user.
