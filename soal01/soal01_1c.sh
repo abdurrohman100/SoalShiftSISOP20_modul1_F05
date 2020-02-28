@@ -1,13 +1,15 @@
 #!/bin/bash
 
 
-awk -F "	" 'BEGIN {}
+awk -F "\t" 'BEGIN {}
 
-		   {if($11 ~ "Illionis" || $11 ~ "Texas"){
-			print $17 ";" $21 > "Barang-di-Texas-dan-Illionis.tsv"
-		   }}
+		   {
+			if($11 ~ "Illinois" || $11 ~ "Texas"){b[$17]=b[$17]+$21;}
+			}
 
-		   END { }' Sample-Superstore.tsv
+		   END {
+			 for (i in b){print i ";" b[i]}
+			}' Sample-Superstore.tsv > Barang-di-Texas-dan-Illionis.tsv
 
-sort -t';' -gk2 Barang-di-Texas-dan-Illionis.tsv > sorted.tsv 
- awk -F  ";" '{print $1 $2}NR==10{exit}' sorted.tsv 
+sort -t';' -gk2 Barang-di-Texas-dan-Illionis.tsv | head -n 10 
+rm Barang-di-Texas-dan-Illionis.tsv

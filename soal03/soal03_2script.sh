@@ -26,6 +26,7 @@ else
 fi
 
 awk -F ' ' '{n++;print n" "$2;}' $curdir/location.log | sort -k 2 > $curdir/sorted.log
+
 awk -F  ' ' '{
 cmdDupe="mv "now"/pdkt_kusuma_"$1".jpg "now"/duplicate/duplicate_"b".jpg"; 
 cmdKena="mv "now"/pdkt_kusuma_"$1".jpg "now"/kenangan/kenangan_"a".jpg";

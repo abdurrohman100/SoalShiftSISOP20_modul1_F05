@@ -1,6 +1,6 @@
 #!/bin/bash
 
-awk -F "	" 'BEGIN {z=1;}
+awk -F "\t" 'BEGIN {z=1;}
 
 		   {if($13 ~ "Central"){a[$11]=a[$11]+$21;}}
 		   END {
