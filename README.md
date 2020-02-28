@@ -1,4 +1,5 @@
 
+
 # SoalShiftSISOP20_modul1_F5
 Repository Praktikum Sisop 1
 
@@ -207,107 +208,220 @@ Pada script dekripsi kita hanya perlu menukar posisi set pada fungsi tr.
 
 ## Penjelasan Penyelesaian Soal nomor 3
 ### Soal 3
-Pada soal nomor 3 kita diminta membaut script untuk mendownload 28 gambar dari "https://loremflickr.com/320/240/cat" menggunakan command wget dan menyimpan file dengan nama "pdkt_kusuma_NO" (contoh: pdkt_kusuma_1, pdkt_kusuma_2, pdkt_kusuma_3) dan menyimpan log messages wget kedalam sebuah file "wget.log".  Script tersebut hanya berjalan setiap 8 jam dimulai dari jam 6.05 setiap hari kecuali hari Sabtu. Kemudian diminta membuat sebuah script untuk mengidentifikasi gambar yang identik dari keseluruhan gambar yang terdownload tadi. Bila terindikasi sebagai gambar yang identik, maka sisakan 1 gambar dan pindahkan sisa file identik tersebut ke dalam folder ./duplicate dengan format filename "duplicate_nomor" (contoh : duplicate_200, duplicate_201). Setelah itu lakukan pemindahan semua gambar yang tersisa kedalam folder ./kenangan dengan format filename "kenangan_nomor" (contoh: kenangan_252, kenangan_253). Setelah tidak ada gambar di current directory, maka lakukan backup seluruh log menjadi ekstensi ".log.bak".
-Penyelsainya menggunkaan script sebagai berikut
+Pada soal nomor 3 kita diminta membuat script untuk mendownload 28 gambar dari "https://loremflickr.com/320/240/cat" menggunakan command wget dan menyimpan file dengan nama "pdkt_kusuma_NO" (contoh: pdkt_kusuma_1, pdkt_kusuma_2, pdkt_kusuma_3) dan menyimpan log messages wget kedalam sebuah file "wget.log".  Script tersebut hanya berjalan setiap 8 jam dimulai dari jam 6.05 setiap hari kecuali hari Sabtu. Kemudian diminta membuat sebuah script untuk mengidentifikasi gambar yang identik dari keseluruhan gambar yang terdownload tadi. Bila terindikasi sebagai gambar yang identik, maka sisakan 1 gambar dan pindahkan sisa file identik tersebut ke dalam folder ./duplicate dengan format filename "duplicate_nomor" (contoh : duplicate_200, duplicate_201). Setelah itu lakukan pemindahan semua gambar yang tersisa kedalam folder ./kenangan dengan format filename "kenangan_nomor" (contoh: kenangan_252, kenangan_253). Setelah tidak ada gambar di current directory, maka lakukan backup seluruh log menjadi ekstensi ".log.bak".
+Untuk penyelesaian problem pertama yaitu mendownload 28 gambar dari https://loremflickr.com/320/240/cat kami membuat file dengan nama soal03_1script.sh isinya sebagai berikut
+``` 
+#! /bin/bash
+curdir=`pwd`
+if [ -f $curdir/wget.log ]
+ then
+ rm $curdir/wget.log
+fi
+if [ -f $curdir/location.log ]
+ then
+ rm $curdir/location.log
+fi
+for ((num=1; num<=28; num=num+1))
+do
+  wget -O $curdir/pdkt_kusuma_$num.jpg --append-output=$curdir/wget.log https://loremflickr.com/320/240/cat 
+done
+  grep "Location" $curdir/wget.log> $curdir/location.log
+``` 
+Penjelasanya sebagai berikut
+``` 
+#! /bin/bash
+curdir=`pwd`
+``` 
+>pwd - print name of current/working directory
 
-    #! /bin/bash
-  
-    if [ -f /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/wget.log ]
-	    then
-	    rm /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/wget.log
-    fi
-    
-    if [ -f /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/location.log ]
-	    then
-	    rm /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/location.log
-    fi
-Pertama kita mencek apakah terdapat location.log ataupun wget.log, jika ada maka kita remove mereka terlebih dahulu.
-    
-    for ((num=1; num<=28; num=num+1))
-	    do
-	    wget -O /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/pdkt_kusuma_$num.jpg --append-output=/home/seijaku/Documents/Sisop/Praktikum1/Nomor3/wget.log https://loremflickr.com/320/240/cat
-    done
-   Kemudian lakukan donwload memalui wget 28 kali.
-   
-
- - wget berfungsi untuk mendownload file parameter -O untuk memungkinkan kita mendefinisikan nama file yang didownload
- - --apend-output digunakan untuk mendapatkan messege log dari wget dan meng-append nya kedalam file log yang ditentukan
-  ```    
-grep "Location" /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/wget.log> /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/location.log
- ```    
-  Setelah Semua terdownload lakukan grep terhadap "Location" unutk mendapatkan alamat awal gambar.
-
- - grep " Location" untuk mengambil semua lines yang mengandung kata "Location" pada wget.log dan me-redirect hasilnya ke location.log
-
- 
-
-```     
- 
-    if [ ! -d /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/duplicate ]
-        	    then
-        	    mkdir /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/duplicate
-        	    fi
-   if [ ! -d /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/kenangan ]
-    	    then
-        	    mkdir /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/kenangan
-        	    fi
+Kita menggunakan shebang untuk mendeklarasikan interpreter yang digunakan yaitu bash.
+Kemudian disini saya membuat variable bernama *curdir* untuk menyimpan hasil dari fungsi *pwd* yaitu berupa direktori dimana script berada. Hal ini dilakukan untuk mempermudah penulisan absolute path. 
 
 ``` 
-  Kemudian kita cek apakah folder kenangan ataupun duplikat sudah ada, jika belum maka buat folder yang belum ada.
-  
+if [ -f $curdir/wget.log ]
+ then
+ rm $curdir/wget.log
+fi
+if [ -f $curdir/location.log ]
+ then
+ rm $curdir/location.log
+fi
 ``` 
-    if [ "$(ls -A /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/kenangan/)" ];
-	then
-	kLast=$(ls /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/kenangan -l | cat | grep "kenangan" |awk -F ' |_' '{print $10}' | rev | cut -c5-|rev |sort -n | tail -1)
-    else
-	kLast=1
-    fi
-    
-    if [ "$(ls -A /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/duplicate/)" ]; 
-	    then
-	    dLast=$(ls /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/duplicate -l | cat | grep "duplicate" |awk -F ' |_' '{print $10}' | rev | cut -c5-|rev |sort -n | tail -1)
-    else
-	dLast=1
-    fi
-  
-``` 
-  Kemudian kita mengecek nomor terakhir dalam folder kenangan maupun duplikat
-  
-    awk -F ' ' '{n++;print n" "$2;}' /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/location.log | sort -k 2 > /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/sorted.log
- Untuk mendeteksi sebuah file duplikat atau tidak disini kami membuat filebantuan berupa file sorted.log yang berisi urutan nomor file dan lokasinya
- 
-    awk -F ' ' '{
-    
-    cmdDupe="mv /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/pdkt_kusuma_"$1".jpg /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/duplicate/duplicate_"b".jpg";
-    
-    cmdKena="mv /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/pdkt_kusuma_"$1".jpg /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/kenangan/kenangan_"a".jpg";
-    
-    if(i==$2){ system(cmdDupe);b++} else {system(cmdKena);a++}; i=$2;}' a="$kLast" b="$dLast" /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/sorted.log
-    
- Kemudian untuk mengecek file dupikat atau tidak, kami mengecek melalui sorted.log sudah dibuat
- 
+>rm - remove files or directories
+>-f untuk menegecek sebuah file 
 
- - Pada command awk diatas sparator yang digunakan adalah spasi(" ") kemudian awk juga mengunnakan variable dari `dLast` dan `kLast`. Selain itu kami menggunakan perintah system untuk menjalankan perintah `mv`
-
- ``` 
-    cat /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/location.log >> /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/location.log.bak
-    
-    cat /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/wget.log >> /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/wget.log.bak\
-    
+Kemudian disini kami mengecek apakah ada file wget.log ataupun location.log. Jika ada maka file tersebut akan dihapus. Hal ini dilakukan agar script kedua bisa dijalankan berkali-kali. Jadi sebelum mendownload file. Untuk pengecekan file digunakan parameter -f dan pathfile yang ingin di cek. Kemudian jika terdapat file log maka file tersebut akan dihapus menggunakan rm.
 ``` 
-Setelah directory sudah kosong kami membackup file location.log dan wget.log dengan meng-append ke location.log.bak dan wget.log.bak
- ```  
-    if [ -f sorted.log ]
-    
-    then
-    
-	    rm /home/seijaku/Documents/Sisop/Praktikum1/Nomor3/sorted.log
-    
-    fi
- ```    
-  Terakhir kami meremove sorted.log yang sudah dipakai.
+nPDKT="pdkt_kusuma_"
+nDownload="https://loremflickr.com/320/240/cat"
+
+for ((num=1; num<=28; num=num+1))
+do
+	wget -O $curdir/$nPDKT$num.jpg --append-output=$curdir/wget.log $nDownload
+done
+``` 
+> Wget - The non-interactive network downloader.
+> 
+> --append-output=logfile -  Append ke logfile. Same as -o
+
+Kemudian kami melakukan donwload file dari https://loremflickr.com/320/240/cat dengan menggunakan wget. Namun terlebih dahulu untuk menyimpan namafile dan alamat download pada sebuah variable dengan nama *nPDKT* dan *nDownload* . Perintah wget dimasukkan kedalam looping sehingga bisa mendownload 28 file saat dijalankan.
+
+``` 
+grep "Location" $curdir/wget.log> $curdir/location.log
+``` 
+>grep, egrep, fgrep, rgrep - print lines matching a pattern
+
+Selanjutnya kami melakukan fungsi grep kata "Location" pada wget.log dan menyimpan hasilnya ke location.log. Hasil dari grep akan berupa asal file yang sudah di download
 
 Kemudian untuk crontab yang digunakan adalah
 ``` 
     5 6-23/8 * * 0-5 /home/seijaku/SoalShiftSISOP20_modul1_F5/soal03/soal03_scriptno3.sh
 ``` 
+>5 6-23/8 * * 0-5
+>>5 berarti pada menit ke lima
+>>6-23/8 berarti mulai jam 6 hingga jam 23 setiap 8 jam
+>> (bintang) * berarti setiap hari di bulan itu
+>>  (bintang) * berarti setiap bulan
+>> 0-5 berarti dari hari MInggu sampai Jumat
+
+
+/home/seijaku/SoalShiftSISOP20_modul1_F5/soal03 disini adalah local directory pada user dimana terdapat file yang akan dieksekusi bisa disesuaikan untuk setiap user.
+
+Kemudian untuk mengecek duplikat gambar kami menggunakan soal03_2script.sh
+``` 
+#! /bin/bash
+curdir=`pwd`
+if [ ! -d $curdir/duplicate ]
+then
+	mkdir $curdir/duplicate
+fi
+if [ ! -d $curdir/kenangan ]
+then
+	mkdir $curdir/kenangan
+fi
+
+if [ "$(ls -A $curdir/kenangan/)" ];
+then
+	kLast=$(ls $curdir/kenangan -l | cat | grep "kenangan" |awk -F ' |_' '{print $10}' | rev | cut -c5-|rev |sort -n | tail -1)
+else
+	kLast=1
+fi
+
+if [ "$(ls -A $curdir/duplicate/)" ]; 
+then
+	dLast=$(ls $curdir/duplicate -l | cat | grep "duplicate" |awk -F ' |_' '{print $10}' | rev | cut -c5-|rev |sort -n | tail -1)
+else
+	dLast=1
+fi
+
+awk -F ' ' '{n++;print n" "$2;}' $curdir/location.log | sort -k 2 > $curdir/sorted.log
+
+awk -F ' ' '{
+cmdDupe="mv "now"/pdkt_kusuma_"$1".jpg "now"/duplicate/duplicate_"b".jpg";
+cmdKena="mv "now"/pdkt_kusuma_"$1".jpg "now"/kenangan/kenangan_"a".jpg";
+if(i==$2){ system(cmdDupe);b++} else {system(cmdKena);a++}; i=$2;}' a="$kLast" b="$dLast" now=$curdir $curdir/sorted.log
+cat $curdir/location.log >> $curdir/location.log.bak
+cat $curdir/wget.log >> $curdir/wget.log.bak
+
+if [ -f sorted.log ]
+then
+	rm $curdir/sorted.log
+fi
+``` 
+Penjelasanya sebagai berikut
+``` 
+#! /bin/bash
+curdir=`pwd`
+if [ ! -d $curdir/duplicate ]
+then
+	mkdir $curdir/duplicate
+fi
+if [ ! -d $curdir/kenangan ]
+then
+	mkdir $curdir/kenangan
+fi
+``` 
+>#! /bin/bash pendekarasian bash interpreter
+>pwd - print name of current/working directory
+> -d mengecek apakah suatu direktori eksis
+> mkdir - make directories
+>
+Pertama kami mendeklarasikan interpreter bash pada script ini menggunakna shebang #! /bin/bash.
+Kemudian kami membuat variable untuk menyimpan path script untuk memudahkan penggunaaan absolute path. Kemudian kami mengecek directory *kenangan* ataupun *duplikat* jika direktori tersebut belum ada maka direktori tersebut akan dibuat menggunakan *mkdir*
+
+``` 
+if [ "$(ls -A $curdir/kenangan/)" ];
+then
+	kLast=$(ls $curdir/kenangan -l | cat | grep "kenangan" |awk -F ' |_' '{print $10}' | rev | cut -c5-|rev |sort -n | tail -1)
+else
+	kLast=1
+fi
+
+if [ "$(ls -A $curdir/duplicate/)" ]; 
+then
+	dLast=$(ls $curdir/duplicate -l | cat | grep "duplicate" |awk -F ' |_' '{print $10}' | rev | cut -c5-|rev |sort -n | tail -1)
+else
+	dLast=1
+fi
+``` 
+>ls - list directory contents
+>> -A do not list implied. Return false if a directory empty
+>> -l    use a long listing format.
+
+>cat - concatenate files and print on the standard output
+
+>grep, egrep, fgrep, rgrep - print lines matching a pattern
+
+>awk -F untuk menjalankan script awk melalui terminal
+
+>rev - reverse lines characterwise
+
+>cut - remove sections from each line of files
+>>-c select only these characters. Untuk menentukan jumlah karakter yang ingin di cut
+
+>sort - sort lines of text files
+>>-n compare according to string numerical value
+
+>tail - output the last part of files
+
+Block fungsi diatas untuk mengecek nomor file terakhir pada folder kenangan dan duplicate. Pertama kita cek dulu apakah folder kosong atau tidak jika tidak maka akan dicari file dengan nomor terakhir(terbesar) pada folder itu. Disini kita memanfaatkan fungsi ls -l untuk mendapatkan list isi pada direktori. Akan didapat hasil seperti contoh berikut
+``` 
+-rw-r--r-- 1 seijaku seijaku 24481 Feb 23 22:59 duplicate_1.jpg
+-rw-r--r-- 1 seijaku seijaku 15902 Feb 26 07:05 duplicate_2.jpg
+-rw-r--r-- 1 seijaku seijaku 24750 Feb 25 16:27 duplicate_3.jpg
+-rw-r--r-- 1 seijaku seijaku 17727 Feb 25 23:08 duplicate_4.jpg
+``` 
+dari foutput itu kami menggunakan grep dan awk dan fungsi pendukung di atas untuk mendapatkan angka nya, meskipuncaranay tidak optimal. Number terbesar akan ditampung di varaible kLast dan dLast
+``` 
+awk -F ' ' '{n++;print n" "$2;}' $curdir/location.log | sort -k 2 > $curdir/sorted.log
+``` 
+>sort - sort lines of text files
+>>-k sort via a key.  Key pada kolom ke 2 merupakan location asal file untuk melakukan sorting
+
+Melalui command awk pertama kami menambahkan index *n* sebelum lokasi asal file. Hal ini dilakukan untuk menghubungkan alamat asal file dengan nomor yang ada pada nama file. Kemudian kami melakukan sorting menggunakan fungsi sort dengan key untuk disorting adalah key kedua yaitu alamat asal file( key satu adalah indeks yang sebelumnya dibuat oleh variable n) kemudian kami menyimpanya di sorted.log
+
+```
+awk -F ' ' '{
+
+cmdDupe="mv "now"/pdkt_kusuma_"$1".jpg "now"/duplicate/duplicate_"b".jpg";
+cmdKena="mv "now"/pdkt_kusuma_"$1".jpg "now"/kenangan/kenangan_"a".jpg";
+
+if(i==$2){ system(cmdDupe);b++}
+else {system(cmdKena);a++}; i=$2;}' a="$kLast" b="$dLast" now=$curdir $curdir/sorted.log
+
+cat $curdir/location.log >> $curdir/location.log.bak
+cat $curdir/wget.log >> $curdir/wget.log.bak
+```
+>system  - Pada block awk digunakan untuk memanggil perintah yang bisa dijalankan pada terminal
+
+Kemudian kami melakukan mengecekan duplikat file. Cara pengecekan dilakukan dengan membandingkan kolom kedua. Pada sorted.log data kolom kedua telah diurutkan berdasarkan namanya. Jadi jika terdapat nama yang sama maka, file tersebut akan berada beururtan. Karena itu kami hanya perlu melakukan pengecekan terhadap row dibawahnya. Jika row dibawahnya memiliki asal yang sama dengan row sekarang maka file tersebut adalah duplikat dan harus dipindah ke folder duplikat, jika tidak sama berarti file bukan duplikat dan dipindah ke folder kenangan.
+```
+if [ -f sorted.log ]
+then
+	rm $curdir/sorted.log
+fi
+``` 
+Kemudian terakhir kami meremove sorted.log
+
+
+
